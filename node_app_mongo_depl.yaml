@@ -1,0 +1,37 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: node-app-mongo-depl
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: node-app-mongo-pod
+  template:
+    metadata:
+      labels:
+        app: node-app-mongo-pod
+    spec:
+      containers:
+        - name: node-app-mongo-container
+          image: 192.168.3.1:5000/node-app-mongo-image
+          ports:
+            - containerPort: 3000
+          env:
+           - name: MONGO_URI
+             value: "mongodb://mongo-srv:27017/usersdb"
+                  
+          imagePullPolicy: Always
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app-mongo-srv
+spec:
+  selector:
+    app: node-app-mongo-pod
+  ports:
+    - port: 3002
+      targetPort: 3000
+  type: LoadBalancer
+ 
